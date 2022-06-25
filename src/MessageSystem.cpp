@@ -6,12 +6,25 @@
 namespace yugioh_core
 {
 
-MessagePublisher::MessagePublisher(Game& game) {
-    _game = &game;
+MessageListener::MessageListener(Game* game) {
+    _game = game;
 }
 
-void MessagePublisher::addListener(MessageListener& listener) {
-    _listeners.insert(&listener);
+MessageListener::~MessageListener() {
+    auto publisher = _game->getMessagePublisher();
+    publisher->removeListener(this);
+}
+
+MessagePublisher::MessagePublisher(Game* game) {
+    _game = game;
+}
+
+void MessagePublisher::addListener(MessageListener* listener) {
+    _listeners.insert(listener);
+}
+
+void MessagePublisher::removeListener(MessageListener* listener) {
+    _listeners.erase(listener);
 }
 
 void MessagePublisher::publish(const Message& msg) {
@@ -20,8 +33,8 @@ void MessagePublisher::publish(const Message& msg) {
     }
 }
 
-void MessagePublisher::publish(const Message& msg, MessageListener& target) {
-    auto target_listener = *_listeners.find(&target);
+void MessagePublisher::publish(const Message& msg, MessageListener* target) {
+    auto target_listener = *_listeners.find(target);
     target_listener->handleMessagae(msg);
 }
 

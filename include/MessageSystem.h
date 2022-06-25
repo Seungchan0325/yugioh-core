@@ -5,6 +5,7 @@
 #include <set>
 
 #include "Game.h"
+#include "MessageDef.h"
 
 namespace yugioh_core
 {
@@ -18,19 +19,23 @@ struct Message {
 class MessageListener
 {
 public:
+    MessageListener(Game* game);
+    virtual ~MessageListener();
     virtual void handleMessagae(Message msg);
 private:
+    Game* _game;
 };
 
 class MessagePublisher
 {
 public:
-    MessagePublisher(Game& game);
+    MessagePublisher(Game* game);
 
-    void addListener(MessageListener& listener);
-    void removeListener(MessageListener& listener);
+    void addListener(MessageListener* listener);
+    void removeListener(MessageListener* listener);
+
     void publish(const Message& msg);
-    void publish(const Message& msg, MessageListener& target);
+    void publish(const Message& msg, MessageListener* target);
 private:
     Game* _game;
     std::set<MessageListener*> _listeners;
